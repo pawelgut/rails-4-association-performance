@@ -1,0 +1,15 @@
+== README
+
+This is a test that benchmarks the performance of <tt>has_many</tt> associations in Rails 3 vs Rails 4. It's meant to be used in conjunction with https://github.com/pawelgut/rails-3-association-performance
+
+We have three models: a grandparent has many parents, who have many children. In speed test we create a single grandparent, 200 parents that all belong to it, and 20 children for each parent. We preload everything (we are not interested in benchmarking the actual queries here). Then we run
+  result = Benchmark.measure do
+    loaded_grandparent.parents.each do |parent|
+      parent.children
+    end
+  end
+which basically calls a has_many association 200 times.
+
+To run the test, please type
+  rake benchmark_performance
+In Rails 3, this takes ~0.0002 seconds. In Rails 4, it takes ~0.02 seconds - a 100x difference! In applications that call <tt>has_many</tt> tens of thousands of times, this translates to entire seconds lost.
